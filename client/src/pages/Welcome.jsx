@@ -1,6 +1,12 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Welcome = () => {
+  
+  let navigate = useNavigate(); 
+  const handleClick = () =>{
+     navigate("/chat");
+  }
+
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6"
@@ -46,6 +52,7 @@ const Welcome = () => {
 
         <div className="mt-10 flex justify-center">
           <button
+            onClick={handleClick}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/50 flex items-center gap-2"
           >
             Let's get started! 🚀
