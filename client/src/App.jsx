@@ -1,13 +1,15 @@
-import { useState } from 'react'
-import Welcome from './pages/Welcome'
-
+import { useState } from "react";
+import Welcome from "./pages/Welcome";
+import ChatUI from "./pages/ChatUI";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <Welcome/>
-  )
+    <>
+      <Welcome />
+      <ChatUI />
+    </>
+  );
 }
 
-export default App
+export default App;
