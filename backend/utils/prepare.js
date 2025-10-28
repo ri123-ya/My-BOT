@@ -1,5 +1,9 @@
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const filePath = "./data/Riya_Rastogi_SDE_25.pdf";
 
@@ -34,10 +38,13 @@ export async function indexTheDocument(filePath) {
     metadata: { section, source: "resume" },
   }));
 
-  console.log("Semantic chunks:", chunks);
+//   console.log("Semantic chunks:", chunks);
 
 
   //Make Embeddings
+  const embeddingModel = new GoogleGenerativeAIEmbeddings({
+     modelName: "text-embedding-004",
+  });
 
   //Store in Vector DB
 }
