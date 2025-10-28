@@ -30,7 +30,7 @@ export async function indexTheDocument(filePath) {
 
   // Create chunks with metadata
   const chunks = Object.entries(sections).map(([section, text]) => ({
-    content: text,
+   pageContent: text,
     metadata: { section, source: "resume" },
   }));
 
