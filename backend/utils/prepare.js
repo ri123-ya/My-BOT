@@ -14,6 +14,7 @@ export async function indexTheDocument(filePath) {
   const loader = new PDFLoader(filePath, { splitPages: false });
   const doc = await loader.load();
   const content = doc[0].pageContent;
+  console.log("✅ PDF loaded");
 
   // console.log("Document Loaded: ", doc[0].pageContent);
 
@@ -24,7 +25,9 @@ export async function indexTheDocument(filePath) {
   // });
   // const chunks = await textsplitters.splitText(doc[0].pageContent);
   // console.log("Chunks : ", chunks);
+
   // Split by major sections
+  console.log("🔄 Chunking document...");
   const sections = {
     contact: extractSection(content, "Riya Rastogi", "Education"),
     education: extractSection(content, "Education", "Projects"),
@@ -39,16 +42,18 @@ export async function indexTheDocument(filePath) {
    pageContent: text,
     metadata: { section, source: "resume" },
   }));
-
-//   console.log("Semantic chunks:", chunks);
+  console.log(`✅ Created ${chunks.length} chunks`);
+  //console.log("Semantic chunks:", chunks);
 
 
   //Make Embeddings
+   console.log("🔄 Initializing embedding model...");
   const embeddingModel = new GoogleGenerativeAIEmbeddings({
      modelName: "text-embedding-004",
   });
 
   //Store in Vector DB
+  console.log("🔄 Creating embeddings and storing in Qdrant...");
   const vectorStore = await QdrantVectorStore.fromDocuments(
     chunks,
     embeddingModel,
