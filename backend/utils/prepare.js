@@ -1,6 +1,7 @@
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { QdrantVectorStore } from "@langchain/qdrant";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -9,9 +10,10 @@ const filePath = "./data/Riya_Rastogi_SDE_25.pdf";
 
 export async function indexTheDocument(filePath) {
   //Load the Pdf
+  console.log("🔄 Loading PDF...");
   const loader = new PDFLoader(filePath, { splitPages: false });
   const doc = await loader.load();
-      const content = doc[0].pageContent;
+  const content = doc[0].pageContent;
 
   // console.log("Document Loaded: ", doc[0].pageContent);
 
@@ -47,6 +49,19 @@ export async function indexTheDocument(filePath) {
   });
 
   //Store in Vector DB
+  const vectorStore = await QdrantVectorStore.fromDocuments(
+    chunks,
+    embeddingModel,
+    {
+      url: process.env.QDRANT_URL,
+      apiKey: process.env.QDRANT_API_KEY,
+      collectionName: "My-Bot",
+    }
+  );
+  console.log("✅ All vectors stored in Qdrant successfully!");
+  console.log(`📊 Collection: "company-bot" contains ${chunks.length} vectors`);
+  
+  return vectorStore;
 }
 
 indexTheDocument(filePath);
