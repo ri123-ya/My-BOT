@@ -49,18 +49,13 @@ const ChatUI = () => {
   }, [inputValue]);
 
   const handleSendMessage = () => {
-    if (inputValue.trim()) {
-      setMessages((prev) => [...prev, { text: inputValue, sender: "user" }]);
+     if(isLoading || !inputValue.trim())return;
 
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { text: "This is a placeholder response!", sender: "bot" },
-        ]);
-      }, 500);
-
-      setInputValue("");
-    }
+     //add user message
+     const userMsg = {
+       sender: "user",
+       text: inputValue.trim(),
+     };
   };
 
   const handleKeyPress = (e) => {
