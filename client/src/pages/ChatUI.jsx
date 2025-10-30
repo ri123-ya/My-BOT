@@ -48,14 +48,43 @@ const ChatUI = () => {
     }
   }, [inputValue]);
 
-  const handleSendMessage = () => {
-     if(isLoading || !inputValue.trim())return;
+  const handleSendMessage = async () => {
+    if (isLoading || !inputValue.trim()) return;
 
-     //add user message
-     const userMsg = {
-       sender: "user",
-       text: inputValue.trim(),
-     };
+    //add user message
+    const userMsg = {
+      sender: "user",
+      text: inputValue.trim(),
+    };
+
+    const currentMsg = inputValue;
+    setInputValue("");
+    setIsLoading(true);
+
+    try {
+      //make api call
+      const response = await axios.post("http://localhost:3000/api/chat", {
+        message: currentInput,
+      });
+
+      // Add bot response
+      const botMessage = {
+        text: response.data.answer,
+        sender: "bot",
+      };
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error("Error calling API:", error);
+
+      // Show error message to user
+      const errorMessage = {
+        text: "Sorry, I encountered an error. Please try again later.",
+        sender: "bot",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -65,7 +94,7 @@ const ChatUI = () => {
     }
   };
 
- return (
+  return (
     <div className="bg-neutral-900 text-white min-h-screen overflow-x-hidden">
       {/* Header with RiyaBot and Social Links */}
       <header className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-transparent">
