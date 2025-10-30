@@ -209,6 +209,7 @@ const ChatUI = () => {
               maxHeight: "150px",
               overflowY: "auto",
             }}
+            disabled={isLoading}
           />
           <div className="flex items-center justify-end">
             <button
