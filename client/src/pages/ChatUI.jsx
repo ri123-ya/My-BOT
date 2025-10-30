@@ -7,6 +7,7 @@ import {
   Github,
   Code,
   Briefcase,
+  Loader2,
 } from "lucide-react";
 import axios from "axios";
 
@@ -57,6 +58,8 @@ const ChatUI = () => {
       text: inputValue.trim(),
     };
 
+     setMessages((prev) => [...prev, userMsg]);
+
     const currentMsg = inputValue;
     setInputValue("");
     setIsLoading(true);
@@ -64,7 +67,7 @@ const ChatUI = () => {
     try {
       //make api call
       const response = await axios.post("http://localhost:3000/api/chat", {
-        message: currentInput,
+        message: currentMsg,
       });
 
       // Add bot response
