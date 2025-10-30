@@ -181,6 +181,17 @@ const ChatUI = () => {
           ))
         )}
       </div>
+      {isLoading && (
+        <div className="flex items-start gap-3 my-6">
+          <div className="bg-green-600 p-2 rounded-full flex-shrink-0">
+            <Bot size={20} />
+          </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Loader2 size={16} className="animate-spin" />
+            <span>Thinking...</span>
+          </div>
+        </div>
+      )}
 
       {/* Input Area - Fixed at bottom */}
       <div className="fixed inset-x-0 bottom-0 flex items-center justify-center bg-neutral-900">
