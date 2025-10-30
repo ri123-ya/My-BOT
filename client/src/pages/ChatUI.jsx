@@ -8,11 +8,13 @@ import {
   Code,
   Briefcase,
 } from "lucide-react";
+import axios from "axios";
 
 const ChatUI = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [showMenu, setShowMenu] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
