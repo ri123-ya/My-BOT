@@ -16,6 +16,7 @@ const ChatUI = () => {
   const [inputValue, setInputValue] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState("");
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -64,11 +65,29 @@ const ChatUI = () => {
     setInputValue("");
     setIsLoading(true);
 
+    // ✅ Simulate steps while waiting for response
+    const steps = [
+      "Searching for similar documents...",
+      "Calling Groq API...",
+    ];
+    let stepIndex = 0;
+
+    // Update step every 2 seconds
+    const stepInterval = setInterval(() => {
+      if (stepIndex < steps.length) {
+        setCurrentStep(steps[stepIndex]);
+        stepIndex++;
+      }
+    }, 1000);
+
+
     try {
       //make api call
       const response = await axios.post("http://localhost:3000/api/chat", {
         message: currentMsg,
       });
+
+      clearInterval(stepInterval);
 
       // Add bot response
       const botMessage = {
@@ -77,6 +96,7 @@ const ChatUI = () => {
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
+      clearInterval(stepInterval);
       console.error("Error calling API:", error);
 
       // Show error message to user
@@ -87,6 +107,7 @@ const ChatUI = () => {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      setCurrentStep("");
     }
   };
 
@@ -185,16 +206,21 @@ const ChatUI = () => {
         )}
         {/* Loading Indicator */}
         {isLoading && (
-        <div className="flex items-start gap-3 my-6">
-          <div className="bg-green-600 p-2 rounded-full flex-shrink-0">
-            <Bot size={20} />
+          <div className="flex items-start gap-3 my-6">
+            <div className="bg-green-600 p-2 rounded-full flex-shrink-0">
+              <Bot size={20} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-gray-400 animate-pulse">
+                {/* <Loader2 size={16} className="animate-spin" /> */}
+                <span className="animate-pulse">{currentStep || "Thinking..."}</span>
+              </div>
+              <div className="text-xs text-gray-500">
+                Please wait while I process your request
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-gray-400 animate-pulse">
-            {/* <Loader2 size={16} className="animate-spin" /> */}
-            <span>Thinking...</span>
-          </div>
-        </div>
-      )}
+        )}
       </div>
 
       {/* Input Area - Fixed at bottom */}
