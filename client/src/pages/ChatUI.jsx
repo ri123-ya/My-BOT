@@ -19,7 +19,7 @@ const ChatUI = () => {
   const [currentStep, setCurrentStep] = useState("");
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
-
+  
   const socialLinks = [
     {
       name: "LinkedIn",
