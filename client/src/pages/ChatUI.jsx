@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 
 const ChatUI = () => {
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +50,29 @@ const ChatUI = () => {
     }
   }, [inputValue]);
 
+  //Generate thread ID once when component mounts
+  const [threadId, setThreadId] = useState(() => {
+    // Try to get existing threadId from sessionStorage
+    const savedThreadId = sessionStorage.getItem('currentThreadId');
+    if (savedThreadId) {
+      return savedThreadId;
+    }
+    // Generate new one if doesn't exist
+    const newThreadId = `thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('currentThreadId', newThreadId);
+    return newThreadId;
+  });
+  // Load messages from sessionStorage on mount
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = sessionStorage.getItem('chatMessages');
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
+
+  // ✅ Save messages to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+  }, [messages]);
+
   const handleSendMessage = async () => {
     if (isLoading || !inputValue.trim()) return;
 
@@ -85,6 +108,7 @@ const ChatUI = () => {
       //make api call
       const response = await axios.post("http://localhost:3000/api/chat", {
         message: currentMsg,
+        threadId: threadId,
       });
 
       clearInterval(stepInterval);
@@ -110,6 +134,22 @@ const ChatUI = () => {
       setCurrentStep("");
     }
   };
+  //New Chat function - creates new thread and clears messages
+  const handleNewChat = () => {
+    // Generate new thread ID
+    const newThreadId = `thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Update state
+    setThreadId(newThreadId);
+    setMessages([]);
+    
+    // Update sessionStorage
+    sessionStorage.setItem('currentThreadId', newThreadId);
+    sessionStorage.removeItem('chatMessages');
+    
+    console.log("🆕 New chat started with thread ID:", newThreadId);
+  };
+
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -157,7 +197,7 @@ const ChatUI = () => {
 
         {/* Right: New Chat button */}
         <button
-          onClick={() => setMessages([])}
+          onClick={handleNewChat}
           className="flex items-center gap-2 bg-neutral-800 px-3 py-1.5 rounded-md text-sm text-gray-200 hover:bg-neutral-700 transition-colors"
         >
           <span className="text-lg">+</span>
@@ -179,6 +219,10 @@ const ChatUI = () => {
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-gray-400">
               <p className="text-lg">Ask me anything!</p>
+              {/*Show thread ID for debugging */}
+              <p className="text-xs mt-2 text-gray-600">
+                Thread: {threadId.slice(0, 25)}...
+              </p>
             </div>
           </div>
         ) : (
