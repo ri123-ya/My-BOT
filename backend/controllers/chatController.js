@@ -7,14 +7,14 @@ export async function handleChat(req, res) {
     console.log("🔵 handleChat called");
     console.log("📥 Request body:", req.body);
 
-    const { message } = req.body;
+    const { message , threadId } = req.body;
     if (!message) {
       console.log("❌ No message provided");
       return res.status(400).json({ error: "message is required" });
     }
-    const steps = [];
+     console.log("🧵 Thread ID:", threadId);
+
     console.log("🔍 Step 1: Searching for similar documents...");
-    steps.push(" Searching for similar documents...");
     const chunks = await similaritySearch(message, 3);
     console.log(`✅ Found ${chunks.length} chunks`);
 
@@ -23,13 +23,11 @@ export async function handleChat(req, res) {
     console.log(`✅ Context length: ${context.length} characters`);
 
     console.log("🔍 Step 3: Calling Groq API...");
-    steps.push("  Calling Groq API...");
-    const answer = await askGroq(message, context);
+    const answer = await askGroq(message, context, threadId);
     console.log("✅ Got answer from Groq");
 
     res.json({
       answer,
-      steps, 
       contextUsed: context
    });
   } catch (err) {
