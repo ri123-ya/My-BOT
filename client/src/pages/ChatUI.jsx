@@ -12,6 +12,24 @@ import {
 import axios from "axios";
 
 const ChatUI = () => {
+  //Generate thread ID once when component mounts
+  const [threadId, setThreadId] = useState(() => {
+    // Try to get existing threadId from sessionStorage
+    const savedThreadId = sessionStorage.getItem('currentThreadId');
+    if (savedThreadId) {
+      return savedThreadId;
+    }
+    // Generate new one if doesn't exist
+    const newThreadId = `thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('currentThreadId', newThreadId);
+    return newThreadId;
+  });
+  // Load messages from sessionStorage on mount
+  const [messages, setMessages] = useState(() => {
+    const savedMessages = sessionStorage.getItem('chatMessages');
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
+
   // const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [showMenu, setShowMenu] = useState(false);
@@ -50,25 +68,7 @@ const ChatUI = () => {
     }
   }, [inputValue]);
 
-  //Generate thread ID once when component mounts
-  const [threadId, setThreadId] = useState(() => {
-    // Try to get existing threadId from sessionStorage
-    const savedThreadId = sessionStorage.getItem('currentThreadId');
-    if (savedThreadId) {
-      return savedThreadId;
-    }
-    // Generate new one if doesn't exist
-    const newThreadId = `thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem('currentThreadId', newThreadId);
-    return newThreadId;
-  });
-  // Load messages from sessionStorage on mount
-  const [messages, setMessages] = useState(() => {
-    const savedMessages = sessionStorage.getItem('chatMessages');
-    return savedMessages ? JSON.parse(savedMessages) : [];
-  });
-
-  // ✅ Save messages to sessionStorage whenever they change
+  // Save messages to sessionStorage whenever they change
   useEffect(() => {
     sessionStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
@@ -88,7 +88,7 @@ const ChatUI = () => {
     setInputValue("");
     setIsLoading(true);
 
-    // ✅ Simulate steps while waiting for response
+    // Simulate steps while waiting for response
     const steps = [
       "Searching for similar documents...",
       "Calling Groq API...",
