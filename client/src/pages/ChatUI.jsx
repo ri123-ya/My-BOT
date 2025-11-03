@@ -41,7 +41,7 @@ const ChatUI = () => {
   const socialLinks = [
     {
       name: "LinkedIn",
-      url: "https://linkedin.com/in/yourprofile",
+      url: "www.linkedin.com/in/riya-rastogi-260180204",
       icon: Linkedin,
     },
     { name: "GitHub", url: "https://github.com/yourprofile", icon: Github },
