@@ -44,7 +44,7 @@ const ChatUI = () => {
       url: "www.linkedin.com/in/riya-rastogi-260180204",
       icon: Linkedin,
     },
-    { name: "GitHub", url: "https://github.com/yourprofile", icon: Github },
+    { name: "GitHub", url: "https://github.com/ri123-ya/My-BOT", icon: Github },
     { name: "LeetCode", url: "https://leetcode.com/u/ri_123/", icon: Code },
     { name: "Portfolio", url: "https://yourportfolio.com", icon: Briefcase },
   ];
