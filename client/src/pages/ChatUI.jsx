@@ -15,18 +15,20 @@ const ChatUI = () => {
   //Generate thread ID once when component mounts
   const [threadId, setThreadId] = useState(() => {
     // Try to get existing threadId from sessionStorage
-    const savedThreadId = sessionStorage.getItem('currentThreadId');
+    const savedThreadId = sessionStorage.getItem("currentThreadId");
     if (savedThreadId) {
       return savedThreadId;
     }
     // Generate new one if doesn't exist
-    const newThreadId = `thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem('currentThreadId', newThreadId);
+    const newThreadId = `thread-${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+    sessionStorage.setItem("currentThreadId", newThreadId);
     return newThreadId;
   });
   // Load messages from sessionStorage on mount
   const [messages, setMessages] = useState(() => {
-    const savedMessages = sessionStorage.getItem('chatMessages');
+    const savedMessages = sessionStorage.getItem("chatMessages");
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
 
@@ -37,7 +39,7 @@ const ChatUI = () => {
   const [currentStep, setCurrentStep] = useState("");
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
-  
+
   const socialLinks = [
     {
       name: "LinkedIn",
@@ -70,7 +72,7 @@ const ChatUI = () => {
 
   // Save messages to sessionStorage whenever they change
   useEffect(() => {
-    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+    sessionStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
 
   const handleSendMessage = async () => {
@@ -82,17 +84,14 @@ const ChatUI = () => {
       text: inputValue.trim(),
     };
 
-     setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
 
     const currentMsg = inputValue;
     setInputValue("");
     setIsLoading(true);
 
     // Simulate steps while waiting for response
-    const steps = [
-      "Searching for similar documents...",
-      "Calling Groq API...",
-    ];
+    const steps = ["Searching for similar documents...", "Calling Groq API..."];
     let stepIndex = 0;
 
     // Update step every 2 seconds
@@ -102,7 +101,6 @@ const ChatUI = () => {
         stepIndex++;
       }
     }, 1000);
-
 
     try {
       //make api call
@@ -137,19 +135,20 @@ const ChatUI = () => {
   //New Chat function - creates new thread and clears messages
   const handleNewChat = () => {
     // Generate new thread ID
-    const newThreadId = `thread-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+    const newThreadId = `thread-${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+
     // Update state
     setThreadId(newThreadId);
     setMessages([]);
-    
+
     // Update sessionStorage
-    sessionStorage.setItem('currentThreadId', newThreadId);
-    sessionStorage.removeItem('chatMessages');
-    
+    sessionStorage.setItem("currentThreadId", newThreadId);
+    sessionStorage.removeItem("chatMessages");
+
     console.log("🆕 New chat started with thread ID:", newThreadId);
   };
-
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -243,6 +242,50 @@ const ChatUI = () => {
                     <Bot size={20} />
                   </div>
                   <div className="max-w-[70%]">{message.text}</div>
+                  {/* Route Decision Badge */}
+                  {message.routeDecision && (
+                    <div
+                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium w-fit ${
+                        message.usedRetrieval
+                          ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                          : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                      }`}
+                    >
+                      {message.usedRetrieval ? (
+                        <>
+                          <Database size={14} />
+                          <span>Used Resume Search</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={14} />
+                          <span>Direct Answer</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Sources Display */}
+                  {message.sources && message.sources.length > 0 && (
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <FileText size={16} />
+                        <span>
+                          Sources ({message.sources.length} chunks used)
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        {message.sources.map((source, index) => (
+                          <SourceChunk
+                            key={index}
+                            source={source}
+                            messageId={message.id}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -257,7 +300,9 @@ const ChatUI = () => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-gray-400 animate-pulse">
                 {/* <Loader2 size={16} className="animate-spin" /> */}
-                <span className="animate-pulse">{currentStep || "Thinking..."}</span>
+                <span className="animate-pulse">
+                  {currentStep || "Thinking..."}
+                </span>
               </div>
               <div className="text-xs text-gray-500">
                 Please wait while I process your request
