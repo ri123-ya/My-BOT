@@ -8,6 +8,10 @@ import {
   Code,
   Briefcase,
   Loader2,
+  FileText,
+  ChevronUp as ChevronUpIcon,
+  Database,
+  Sparkles,
 } from "lucide-react";
 import axios from "axios";
 
