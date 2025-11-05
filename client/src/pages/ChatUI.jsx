@@ -121,7 +121,7 @@ const ChatUI = () => {
         }
       } else {
         setCurrentStep("Direct LLM : Generating Response...");
-        await new Promise((resolve) => setTimeout(resolve,500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
       const botMessage = {
@@ -303,10 +303,16 @@ const ChatUI = () => {
                                 <span className="text-xs text-gray-300 truncate font-mono">
                                   Resume.pdf
                                 </span>
+                                <span className="text-xs text-gray-500 block">
+                                  Page {source.metadata?.page || index + 1}
+                                </span>
                               </div>
-                              <span className="text-xs text-gray-500 block">
-                                Page {source.metadata?.page || index + 1}
-                              </span>
+                              {/* Content Preview */}
+                              <div className="text-xs text-gray-400 leading-relaxed line-clamp-3 mt-2">
+                                {source.pageContent ||
+                                  source.content ||
+                                  "No preview available"}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -342,7 +348,7 @@ const ChatUI = () => {
 
       {/* Input Area - Fixed at bottom */}
       <div className="fixed inset-x-0 bottom-0 flex items-center justify-center bg-neutral-900">
-        <div className="bg-neutral-800 p-2 rounded-3xl w-full max-w-3xl mb-3 mx-2">
+        <div className="bg-neutral-800 p-2 rounded-3xl w-full max-w-3xl mb-3 mx-2 relative">
           <textarea
             ref={textareaRef}
             className="w-full resize-none outline-0 p-3 bg-transparent text-white custom-scrollbar"
@@ -358,7 +364,7 @@ const ChatUI = () => {
             }}
             disabled={isLoading}
           />
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-end absolute right-3 top-1/2 -translate-y-1/2">
             <button
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isLoading}
