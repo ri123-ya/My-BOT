@@ -7,7 +7,6 @@ import {
   Github,
   Code,
   Briefcase,
-  Loader2,
   FileText,
   ChevronUp as ChevronUpIcon,
   Database,
@@ -16,31 +15,28 @@ import {
 import axios from "axios";
 
 const ChatUI = () => {
-  //Generate thread ID once when component mounts
   const [threadId, setThreadId] = useState(() => {
-    // Try to get existing threadId from sessionStorage
     const savedThreadId = sessionStorage.getItem("currentThreadId");
     if (savedThreadId) {
       return savedThreadId;
     }
-    // Generate new one if doesn't exist
     const newThreadId = `thread-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
     sessionStorage.setItem("currentThreadId", newThreadId);
     return newThreadId;
   });
-  // Load messages from sessionStorage on mount
+
   const [messages, setMessages] = useState(() => {
     const savedMessages = sessionStorage.getItem("chatMessages");
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
 
-  // const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState("");
+  const [expandedSources, setExpandedSources] = useState({});
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -55,7 +51,6 @@ const ChatUI = () => {
     { name: "Portfolio", url: "https://yourportfolio.com", icon: Briefcase },
   ];
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -65,7 +60,6 @@ const ChatUI = () => {
     }
   }, [messages]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -74,7 +68,6 @@ const ChatUI = () => {
     }
   }, [inputValue]);
 
-  // Save messages to sessionStorage whenever they change
   useEffect(() => {
     sessionStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
@@ -84,6 +77,7 @@ const ChatUI = () => {
 
     //add user message
     const userMsg = {
+      id: `user-${Date.now()}-${Math.random()}`,
       sender: "user",
       text: inputValue.trim(),
     };
@@ -93,65 +87,82 @@ const ChatUI = () => {
     const currentMsg = inputValue;
     setInputValue("");
     setIsLoading(true);
-
-    // Simulate steps while waiting for response
-    const steps = ["Searching for similar documents...", "Calling Groq API..."];
-    let stepIndex = 0;
-
-    // Update step every 2 seconds
-    const stepInterval = setInterval(() => {
-      if (stepIndex < steps.length) {
-        setCurrentStep(steps[stepIndex]);
-        stepIndex++;
-      }
-    }, 1000);
-
+    setCurrentStep(" Classifying your question...");
     try {
-      //make api call
       const response = await axios.post("http://localhost:3000/api/chat", {
         message: currentMsg,
         threadId: threadId,
       });
 
-      clearInterval(stepInterval);
+      const route = response.data.routeDecision;
+      let stepInterval = null;
+      if (route === "RAG_QUERY") {
+        const steps = [
+          "Searching for similar documents......",
+          "Calling Groq API..",
+          "RAG : Generating Response...",
+        ];
+        let stepIndex = 0;
 
-      // Add bot response
+        setCurrentStep(steps[0]); // Start with first step
+
+        stepInterval = setInterval(() => {
+          stepIndex++;
+          if (stepIndex < steps.length) {
+            setCurrentStep(steps[stepIndex]);
+          }
+        }, 1000);
+        // Wait for the animation to complete before showing response
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // 3 steps × 1 second
+
+        if (stepInterval) {
+          clearInterval(stepInterval);
+          stepInterval = null;
+        }
+      } else {
+        setCurrentStep("Direct LLM : Generating Response...");
+        await new Promise((resolve) => setTimeout(resolve,500));
+      }
+
       const botMessage = {
-        text: response.data.answer,
+        id: `user-${Date.now()}-${Math.random()}`,
         sender: "bot",
+        text: response.data.answer,
+        sources: response.data.sources || [],
+        usedRetrieval: response.data.usedRetrieval,
+        routeDecision: response.data.routeDecision,
       };
+
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       clearInterval(stepInterval);
       console.error("Error calling API:", error);
 
-      // Show error message to user
       const errorMessage = {
-        text: "Sorry, I encountered an error. Please try again later.",
+        id: `user-${Date.now()}-${Math.random()}`,
         sender: "bot",
+        text: "Sorry, I encountered an error. Please try again later.",
+        sources: [],
+        usedRetrieval: false,
       };
       setMessages((prev) => [...prev, errorMessage]);
+      if (setInterval) clearInterval(setInterval);
     } finally {
       setIsLoading(false);
       setCurrentStep("");
     }
   };
-  //New Chat function - creates new thread and clears messages
+
   const handleNewChat = () => {
-    // Generate new thread ID
     const newThreadId = `thread-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
 
-    // Update state
     setThreadId(newThreadId);
     setMessages([]);
-
-    // Update sessionStorage
+    setExpandedSources({});
     sessionStorage.setItem("currentThreadId", newThreadId);
     sessionStorage.removeItem("chatMessages");
-
-    console.log("🆕 New chat started with thread ID:", newThreadId);
   };
 
   const handleKeyPress = (e) => {
@@ -198,7 +209,6 @@ const ChatUI = () => {
           )}
         </div>
 
-        {/* Right: New Chat button */}
         <button
           onClick={handleNewChat}
           className="flex items-center gap-2 bg-neutral-800 px-3 py-1.5 rounded-md text-sm text-gray-200 hover:bg-neutral-700 transition-colors"
@@ -229,8 +239,8 @@ const ChatUI = () => {
             </div>
           </div>
         ) : (
-          messages.map((message, index) => (
-            <div key={index}>
+          messages.map((message) => (
+            <div key={message.id || message.text}>
               {message.sender === "user" ? (
                 <div className="flex items-start justify-end my-6 gap-3">
                   <div className="bg-neutral-800 p-3 rounded-lg max-w-[70%]">
@@ -241,53 +251,66 @@ const ChatUI = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-start gap-3 my-6">
-                  <div className="bg-green-600 p-2 rounded-full flex-shrink-0">
-                    <Bot size={20} />
-                  </div>
-                  <div className="max-w-[70%]">{message.text}</div>
-                  {/* Route Decision Badge */}
-                  {message.routeDecision && (
-                    <div
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium w-fit ${
-                        message.usedRetrieval
-                          ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                          : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                      }`}
-                    >
-                      {message.usedRetrieval ? (
-                        <>
-                          <Database size={14} />
-                          <span>Used Resume Search</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles size={14} />
-                          <span>Direct Answer</span>
-                        </>
-                      )}
+                <div className="my-6">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-green-600 p-2 rounded-full flex-shrink-0">
+                      <Bot size={20} />
                     </div>
-                  )}
+                    <div className="max-w-[70%]">
+                      {/* Main answer */}
+                      <div className="text-gray-100">{message.text}</div>
+                    </div>
+                  </div>
 
-                  {/* Sources Display */}
+                  {/*Sources Display - Below the answer */}
                   {message.sources && message.sources.length > 0 && (
-                    <div className="space-y-2 mt-2">
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
-                        <FileText size={16} />
-                        <span>
-                          Sources ({message.sources.length} chunks used)
+                    <div className="mt-3 ml-14">
+                      {/* Toggle button */}
+                      <button
+                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300 transition-colors mb-2"
+                        onClick={() =>
+                          setExpandedSources((prev) => ({
+                            ...prev,
+                            [message.id]: !prev[message.id],
+                          }))
+                        }
+                      >
+                        <span className="text-xs font-medium">
+                          {expandedSources[message.id]
+                            ? `Hide Sources (${message.sources.length})`
+                            : `View Sources (${message.sources.length})`}
                         </span>
-                      </div>
-                      <div className="space-y-2">
-                        {message.sources.map((source, index) => (
-                          <SourceChunk
-                            key={index}
-                            source={source}
-                            messageId={message.id}
-                            index={index}
-                          />
-                        ))}
-                      </div>
+                        {expandedSources[message.id] ? (
+                          <ChevronUpIcon size={14} />
+                        ) : (
+                          <ChevronDown size={14} />
+                        )}
+                      </button>
+
+                      {/* Show grid of cards when expanded */}
+                      {expandedSources[message.id] && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {message.sources.map((source, index) => (
+                            <div
+                              key={index}
+                              className="bg-neutral-800/60 border border-neutral-700/50 rounded-lg p-3 hover:border-neutral-600 transition-all"
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                <FileText
+                                  size={14}
+                                  className="text-gray-400 flex-shrink-0"
+                                />
+                                <span className="text-xs text-gray-300 truncate font-mono">
+                                  Resume.pdf
+                                </span>
+                              </div>
+                              <span className="text-xs text-gray-500 block">
+                                Page {source.metadata?.page || index + 1}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -295,6 +318,7 @@ const ChatUI = () => {
             </div>
           ))
         )}
+
         {/* Loading Indicator */}
         {isLoading && (
           <div className="flex items-start gap-3 my-6">
