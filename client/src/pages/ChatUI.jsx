@@ -46,7 +46,7 @@ const ChatUI = () => {
       url: "www.linkedin.com/in/riya-rastogi-260180204",
       icon: Linkedin,
     },
-    { name: "GitHub", url: "https://github.com/ri123-ya/My-BOT", icon: Github },
+    { name: "GitHub", url: "https://github.com/ri123-ya", icon: Github },
     { name: "LeetCode", url: "https://leetcode.com/u/ri_123/", icon: Code },
     { name: "Portfolio", url: "https://yourportfolio.com", icon: Briefcase },
   ];
@@ -178,7 +178,15 @@ const ChatUI = () => {
       <header className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-transparent">
         {/* Left: RiyaBot dropdown */}
         <div className="relative flex items-center">
-          <button
+           <a
+            href="https://github.com/ri123-ya/My-BOT"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-white text-lgflex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-neutral-800/40 transition-colors"
+          >
+            RiyaBot
+          </a>
+          {/* <button
             onClick={() => setShowMenu(!showMenu)}
             className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-neutral-800/40 transition-colors"
           >
@@ -189,9 +197,9 @@ const ChatUI = () => {
                 showMenu ? "rotate-180" : ""
               }`}
             />
-          </button>
-
-          {showMenu && (
+          </button> */}
+ 
+          {/* {showMenu && (
             <div className="absolute top-12 left-0 bg-neutral-800/90 backdrop-blur-md rounded-lg shadow-lg border border-neutral-700 w-56 p-2">
               {socialLinks.map(({ name, url, icon: Icon }) => (
                 <a
@@ -206,7 +214,24 @@ const ChatUI = () => {
                 </a>
               ))}
             </div>
-          )}
+          )}  */}
+        </div>
+        
+        {/* Center: Social Links */}
+        <div className="flex items-center gap-3">
+          {socialLinks.map(({ name, url, icon: Icon }) => (
+            <a
+              key={name}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-800/60 hover:bg-neutral-700 transition-all hover:scale-105 group"
+              title={name}
+            >
+              <Icon size={16} className="text-gray-300 group-hover:text-white transition-colors" />
+              {/* <span className="text-sm text-gray-300 group-hover:text-white transition-colors hidden sm:inline">{name}</span> */}
+            </a>
+          ))}
         </div>
 
         <button
