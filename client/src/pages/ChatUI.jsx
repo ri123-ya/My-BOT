@@ -176,64 +176,70 @@ const ChatUI = () => {
     <div className="bg-neutral-900 text-white min-h-screen overflow-x-hidden">
       {/* Header with RiyaBot and Social Links */}
       <header className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-transparent">
-        {/* Left: RiyaBot dropdown */}
-        <div className="relative flex items-center">
-           <a
-            href="https://github.com/ri123-ya/My-BOT"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-white text-lgflex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-neutral-800/40 transition-colors"
-          >
-            RiyaBot
-          </a>
-          {/* <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-neutral-800/40 transition-colors"
-          >
-            <span className="font-semibold text-white">RiyaBot</span>
-            <ChevronDown
-              size={16}
-              className={`transition-transform duration-200 ${
-                showMenu ? "rotate-180" : ""
-              }`}
-            />
-          </button> */}
- 
-          {/* {showMenu && (
-            <div className="absolute top-12 left-0 bg-neutral-800/90 backdrop-blur-md rounded-lg shadow-lg border border-neutral-700 w-56 p-2">
+        {/* Left: RiyaBot + Social Menu */}
+        <div className="relative flex flex-col items-start">
+          <div className="flex items-center gap-2">
+            <a
+              href="https://github.com/ri123-ya/My-BOT"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-white text-lg hover:bg-neutral-700 px-3 py-1.5 rounded-md transition-colors"
+            >
+              RiyaBot
+            </a>
+
+            {/* Chevron only visible on md and smaller */}
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="md:inline-flex lg:hidden flex items-center justify-center p-2 rounded-md hover:bg-neutral-800/40 transition"
+            >
+              {showMenu ? (
+                <ChevronUpIcon size={18} className="text-gray-300" />
+              ) : (
+                <ChevronDown size={18} className="text-gray-300" />
+              )}
+            </button>
+          </div>
+
+          {/* Icons directly visible on large screens */}
+          <div className="absolute top-12 left-0 backdrop-blur-md rounded-lg shadow-lg hidden lg:flex flex-col">
+            {socialLinks.map(({ name, url, icon: Icon }) => (
+              <a
+                key={name}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-neutral-700 transition-all hover:scale-105 group"
+                title={name}
+              >
+                <Icon
+                  size={16}
+                  className="text-gray-300 group-hover:text-white transition-colors"
+                />
+              </a>
+            ))}
+          </div>
+
+          {/* Dropdown menu for md/sm screens */}
+          {showMenu && (
+            <div className="absolute top-12 left-0 bg-neutral-800/90 backdrop-blur-md rounded-lg shadow-lg border border-neutral-700 w-44 p-2 flex flex-col gap-2 lg:hidden">
               {socialLinks.map(({ name, url, icon: Icon }) => (
                 <a
                   key={name}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-neutral-700 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-neutral-700 transition-colors"
                 >
                   <Icon size={18} className="text-gray-300" />
-                  <span className="text-gray-200">{name}</span>
+                  <span className="text-gray-200 text-sm">{name}</span>
                 </a>
               ))}
             </div>
-          )}  */}
-        </div>
-        
-        {/* Center: Social Links */}
-        <div className="flex items-center gap-3">
-          {socialLinks.map(({ name, url, icon: Icon }) => (
-            <a
-              key={name}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-800/60 hover:bg-neutral-700 transition-all hover:scale-105 group"
-              title={name}
-            >
-              <Icon size={16} className="text-gray-300 group-hover:text-white transition-colors" />
-              {/* <span className="text-sm text-gray-300 group-hover:text-white transition-colors hidden sm:inline">{name}</span> */}
-            </a>
-          ))}
+          )}
         </div>
 
+        {/* New Chat Button */}
         <button
           onClick={handleNewChat}
           className="flex items-center gap-2 bg-neutral-800 px-3 py-1.5 rounded-md text-sm text-gray-200 hover:bg-neutral-700 transition-colors"
@@ -257,10 +263,10 @@ const ChatUI = () => {
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-gray-400">
               <p className="text-lg">Ask me anything!</p>
-              {/*Show thread ID for debugging */}
+              {/*// Show thread ID for debugging
               <p className="text-xs mt-2 text-gray-600">
                 Thread: {threadId.slice(0, 25)}...
-              </p>
+              </p> */}
             </div>
           </div>
         ) : (
@@ -373,7 +379,7 @@ const ChatUI = () => {
 
       {/* Input Area - Fixed at bottom */}
       <div className="fixed inset-x-0 bottom-0 flex items-center justify-center bg-neutral-900">
-        <div className="bg-neutral-800 p-2 rounded-3xl w-full max-w-3xl mb-3 mx-2 relative">
+        <div className="bg-neutral-800 p-2 rounded-3xl w-full max-w-3xl mb-3 mx-2">
           <textarea
             ref={textareaRef}
             className="w-full resize-none outline-0 p-3 bg-transparent text-white custom-scrollbar"
@@ -389,7 +395,7 @@ const ChatUI = () => {
             }}
             disabled={isLoading}
           />
-          <div className="flex items-center justify-end absolute right-3 top-1/2 -translate-y-1/2">
+          <div className="flex items-center justify-end">
             <button
               onClick={handleSendMessage}
               disabled={!inputValue.trim() || isLoading}
