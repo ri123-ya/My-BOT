@@ -1,4 +1,3 @@
-// services/routerService.js - FIXED VERSION
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -38,13 +37,11 @@ Respond with ONLY one of these two keywords, nothing else.`;
 export async function classifyQuery(query) {
   // ✅ Validate API key
   if (!apiKey) {
-    console.error("❌ GOOGLE_API_KEY not found in environment variables");
+    console.error("GOOGLE_API_KEY not found in environment variables");
     return "RAG_QUERY"; // Safe fallback
   }
 
   try {
-    console.log(`🔀 Classifying query: "${query.substring(0, 50)}..."`);
-
     const payload = {
       contents: [{ parts: [{ text: query }] }],
       systemInstruction: {
@@ -76,14 +73,13 @@ export async function classifyQuery(query) {
 
     //Validate response
     if (text === "RAG_QUERY" || text === "DIRECT_LLM") {
-      console.log(`   ✅ Decision: ${text === "RAG_QUERY" ? "📚 RAG_QUERY" : "💬 DIRECT_LLM"}`);
       return text;
     } else {
-      console.warn(`   ⚠️ Unexpected output: "${text}", defaulting to RAG_QUERY`);
+      console.warn(`Unexpected output: "${text}", defaulting to RAG_QUERY`);
       return "RAG_QUERY";
     }
   } catch (error) {
-    console.error("❌ Error classifying query:", error.message);
+    console.error(" Error classifying query:", error.message);
     // Safe fallback: Always default to RAG on error
     return "RAG_QUERY";
   }
