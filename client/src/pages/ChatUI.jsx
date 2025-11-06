@@ -13,10 +13,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import axios from "axios";
-import dotenv from "dotenv";
-
-
-dotenv.config();
 
 const ChatUI = () => {
   const [threadId, setThreadId] = useState(() => {
@@ -93,7 +89,7 @@ const ChatUI = () => {
     setIsLoading(true);
     setCurrentStep(" Classifying your question...");
     try {
-      const response = await axios.post("process.env.BASE_URL/api/chat", {
+      const response = await axios.post("http://localhost:3000/api/chat", {
         message: currentMsg,
         threadId: threadId,
       });
