@@ -185,7 +185,7 @@ const ChatUI = () => {
               rel="noopener noreferrer"
               className="font-semibold text-white text-lg hover:bg-neutral-700 px-3 py-1.5 rounded-md transition-colors"
             >
-              RiyaBot
+              RiyaBOT
             </a>
 
             {/* Chevron only visible on md and smaller */}
