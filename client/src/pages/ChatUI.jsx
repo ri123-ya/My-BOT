@@ -93,6 +93,7 @@ const ChatUI = () => {
       const response = await axios.post("https://my-bot-backend-ap1x.onrender.com/api/chat", {
         message: currentMsg,
         threadId: threadId,
+        withCredentials: true,
       });
 
       const route = response.data.routeDecision;
