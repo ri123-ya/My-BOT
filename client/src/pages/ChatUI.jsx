@@ -88,14 +88,14 @@ const ChatUI = () => {
     setInputValue("");
     setIsLoading(true);
     setCurrentStep(" Classifying your question...");
+    let stepInterval = null;
     try {
-      const response = await axios.post("https://mybot-backend-latest.onrender.com/api/chat", {
+      const response = await axios.post("https://my-bot-backend-ap1x.onrender.com/api/chat", {
         message: currentMsg,
         threadId: threadId,
       });
 
       const route = response.data.routeDecision;
-      let stepInterval = null;
       if (route === "RAG_QUERY") {
         const steps = [
           "Searching for similar documents......",
@@ -135,7 +135,7 @@ const ChatUI = () => {
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      clearInterval(stepInterval);
+      if (stepInterval) clearInterval(stepInterval);
       console.error("Error calling API:", error);
 
       const errorMessage = {
@@ -146,7 +146,6 @@ const ChatUI = () => {
         usedRetrieval: false,
       };
       setMessages((prev) => [...prev, errorMessage]);
-      if (setInterval) clearInterval(setInterval);
     } finally {
       setIsLoading(false);
       setCurrentStep("");
