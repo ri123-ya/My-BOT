@@ -7,7 +7,7 @@ A full-stack RAG AI chat assistant that gives ans according to my resume.
 - **RAG Pipeline** – LangChain + Qdrant for semantic retrieval  
 - **Dual LLMs** – Switch between **Grok** (xAI) and **Google Gemini**
     -  Grok SDK for final LLM response
-    -  Google SDK for vector embedding and Deciding whether the user Query is Rag Query or Direct Query.
+    -  Google Gemini for vector embedding and Deciding whether the user Query is Rag Query or Direct Query.
 - **In-Memory Caching** – `node-cache` for faster repeated queries  
 - **Modern UI** – React + Tailwind + Vite  
 - **Dockerized** – Full stack with `docker-compose`
