@@ -82,20 +82,45 @@ User asks: "What projects?"
 
 ```mermaid
 flowchart TD
-    A[User types question]
-    B{Is it a RAG query?}
-    C[Gemini Embedding]
-    D[Qdrant Similarity Search]
-    E[Relevant Resume Chunks]
-    F[Prompt + Context → Grok]
-    G[Direct → Grok]
-    H[Answer to UI]
+    %% === Input ===
+    A[User Message + threadId] --> B[Backend: /api/chat]
 
-    A --> B
-    B -- Yes --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> H
-    B -- No --> G
-    G --> H
+    %% === Cache Check ===
+    B --> C{node-cache<br/>Hit for threadId?}
+    C -- Yes --> D[Return cached response]
+    D --> Z[Stream to Frontend]
+
+    %% === Router Service (Gemini) ===
+    C -- No --> E[routerService.js<br/>(Google Gemini)]
+    E --> F{Is it a RAG query?}
+
+    %% === Direct Path ===
+    F -- No --> G[Direct → Grok LLM]
+    G --> H[Generate response]
+    H --> I[Store in node-cache<br/>(key: threadId)]
+
+    %% === RAG Path ===
+    F -- Yes --> J[Gemini → Vector Embedding]
+    J --> K[Qdrant Similarity Search]
+    K --> L[Retrieve Top-K Resume Chunks]
+    L --> M[Prompt = User Query + Chunks]
+    M --> N[Grok LLM → Final Answer]
+    N --> I
+
+    %% === Output ===
+    I --> Z
+
+    %% === Styling ===
+    classDef input fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px;
+    classDef cache fill:#fef3c7,stroke:#f59e0b,stroke-width:2px;
+    classDef router fill:#f0fdf4,stroke:#22c55e,stroke-width:2px;
+    classDef rag fill:#f0f0ff,stroke:#6366f1,stroke-width:2px;
+    classDef llm fill:#faf5ff,stroke:#a855f7,stroke-width:2px;
+    classDef output fill:#ecfdf5,stroke:#16a34a,stroke-width:2px;
+
+    class A input
+    class C cache
+    class E router
+    class J,K,L rag
+    class G,N llm
+    class Z output
