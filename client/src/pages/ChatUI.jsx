@@ -14,8 +14,11 @@ import {
   Container,
 } from "lucide-react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const ChatUI = () => {
+  const location = useLocation();
+  const autoQuestion = location.state?.question;
   const [threadId, setThreadId] = useState(() => {
     const savedThreadId = sessionStorage.getItem("currentThreadId");
     if (savedThreadId) {
@@ -29,6 +32,9 @@ const ChatUI = () => {
   });
 
   const [messages, setMessages] = useState(() => {
+    if (location.state?.question) {
+      return []; // Fresh start for auto question
+    }
     const savedMessages = sessionStorage.getItem("chatMessages");
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
@@ -40,6 +46,7 @@ const ChatUI = () => {
   const [expandedSources, setExpandedSources] = useState({});
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
+  const autoSentRef = useRef(false);
 
   const socialLinks = [
     {
@@ -82,10 +89,25 @@ const ChatUI = () => {
     sessionStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
 
-  const handleSendMessage = async () => {
+  useEffect(() => {
+    if (autoQuestion && messages.length === 0 && !autoSentRef.current) {
+      autoSentRef.current = true;
+
+      const userMsg = {
+        id: `auto-${Date.now()}`,
+        sender: "user",
+        text: autoQuestion,
+      };
+      setMessages([userMsg]);
+      sendMessageWithSteps(autoQuestion);
+
+      window.history.replaceState({}, document.title);
+    }
+  }, [autoQuestion]);
+
+  const handleSendMessage = () => {
     if (isLoading || !inputValue.trim()) return;
 
-    //add user message
     const userMsg = {
       id: `user-${Date.now()}-${Math.random()}`,
       sender: "user",
@@ -93,19 +115,31 @@ const ChatUI = () => {
     };
 
     setMessages((prev) => [...prev, userMsg]);
-
-    const currentMsg = inputValue;
+    const msg = inputValue.trim();
     setInputValue("");
+
+    sendMessageWithSteps(msg);
+  };
+
+  const sendMessageWithSteps = async (messageText) => {
+    if (isLoading) return;
+
     setIsLoading(true);
-    setCurrentStep(" Classifying your question...");
+    setCurrentStep("Classifying your question...");
     let stepInterval = null;
+
     try {
-      const response = await axios.post("https://my-bot-backend-6e84.onrender.com/api/chat", {
-        message: currentMsg,
-        threadId: threadId,
-      });
+      const response = await axios.post("https://my-bot-backend-sc44.onrender.com/api/chat", {
+        message: messageText,
+        threadId,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
       const route = response.data.routeDecision;
+
       if (route === "RAG_QUERY") {
         const steps = [
           "Searching for similar documents......",
@@ -113,8 +147,7 @@ const ChatUI = () => {
           "RAG : Generating Response...",
         ];
         let stepIndex = 0;
-
-        setCurrentStep(steps[0]); // Start with first step
+        setCurrentStep(steps[0]);
 
         stepInterval = setInterval(() => {
           stepIndex++;
@@ -122,20 +155,17 @@ const ChatUI = () => {
             setCurrentStep(steps[stepIndex]);
           }
         }, 1000);
-        // Wait for the animation to complete before showing response
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // 3 steps × 1 second
 
-        if (stepInterval) {
-          clearInterval(stepInterval);
-          stepInterval = null;
-        }
+        // Wait for animation
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        if (stepInterval) clearInterval(stepInterval);
       } else {
         setCurrentStep("Direct LLM : Generating Response...");
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
       const botMessage = {
-        id: `user-${Date.now()}-${Math.random()}`,
+        id: `bot-${Date.now()}-${Math.random()}`,
         sender: "bot",
         text: response.data.answer,
         sources: response.data.sources || [],
@@ -146,14 +176,13 @@ const ChatUI = () => {
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       if (stepInterval) clearInterval(stepInterval);
-      console.error("Error calling API:", error);
+      console.error("Error:", error);
 
       const errorMessage = {
-        id: `user-${Date.now()}-${Math.random()}`,
+        id: `bot-${Date.now()}`,
         sender: "bot",
         text: "Sorry, I encountered an error. Please try again later.",
         sources: [],
-        usedRetrieval: false,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -170,6 +199,7 @@ const ChatUI = () => {
     setThreadId(newThreadId);
     setMessages([]);
     setExpandedSources({});
+    autoSentRef.current = false;
     sessionStorage.setItem("currentThreadId", newThreadId);
     sessionStorage.removeItem("chatMessages");
   };

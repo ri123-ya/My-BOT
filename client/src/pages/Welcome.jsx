@@ -8,11 +8,15 @@ const Welcome = () => {
   };
 
   const exampleQuestions = [
-   "What projects has Riya worked on?",
-   "What are her technical skills?",
-   "Tell me about her education.",
-   "Walk me through her work experience.",
+    "What projects has Riya worked on?",
+    "What are her technical skills?",
+    "Tell me about her education.",
+    "Walk me through her work experience.",
   ];
+
+  const handleQuestionClick = (question) => {
+    navigate("/chat", { state: { question } });
+  };
 
   return (
     <div
@@ -23,15 +27,15 @@ const Welcome = () => {
         className="max-w-3xl w-full rounded-3xl p-8 md:p-12 shadow-2xl"
         style={{ backgroundColor: "#2b2b2b", border: "1px solid #3f3f3f" }}
       >
-       {/* Heading */}
+        {/* Heading */}
         <h1 className="text-4xl md:text-5xl font-bold text-gray-100 text-center mb-6 tracking-wide">
           Welcome to RiyaBOT
         </h1>
 
         <p className="text-gray-300 text-center mb-8 text-base md:text-lg max-w-2xl mx-auto">
           Hi, I’m <span className="text-blue-400 font-semibold">Riya</span> —
-          Thank you for visiting.  RiyaBot is here to share details of my
-          skills and experience, and answer any questions you may have. 
+          Thank you for visiting. RiyaBot is here to share details of my skills
+          and experience, and answer any questions you may have.
         </p>
         <div className="space-y-6 text-gray-300">
           {/* Example Questions Section */}
@@ -48,7 +52,7 @@ const Welcome = () => {
                 <div
                   key={i}
                   className="bg-neutral-700/40 text-gray-300 hover:text-white hover:bg-neutral-600/60 transition-all duration-300 rounded-lg px-4 py-2 text-sm cursor-pointer text-center border border-neutral-600/40 hover:shadow-md"
-                  onClick={() => navigate("/chat")}
+                  onClick={() => handleQuestionClick(q)}
                 >
                   {q}
                 </div>
