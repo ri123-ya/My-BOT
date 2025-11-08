@@ -81,30 +81,19 @@ User asks: "What projects?"
 #### Stage 2. Retrival
 ### RAG Flo### RAG Flow (Simplified & Accurate)
 
+### RAG Flow (Clean & Simple)
+
 ```mermaid
 flowchart TD
     A["User Query"] --> B["Gemini\n(RAG vs Direct Decision)"]
-    
+
     B --> C{"RAG or Direct?"}
-    
+
     C -- Direct --> D["Grok LLM"]
     D --> E["Answer\n(to Frontend)"]
-    
+
     C -- RAG --> F["Gemini\nVector Embedding"]
     F --> G["Qdrant\nSimilarity Search"]
     G --> H["Relevant Resume Chunks\n(with source metadata)"]
     H --> I["Grok LLM\n(with context)"]
     I --> J["Answer + Source\n(to Frontend)"]
-
-    %% Styling
-    classDef user fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
-    classDef gemini fill:#d1fae5,stroke:#10b981,stroke-width:2px
-    classDef qdrant fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
-    classDef grok fill:#f3e8ff,stroke:#a855f7,stroke-width:2px
-    classDef output fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
-
-    class A user
-    class B,F gemini
-    class G qdrant
-    class D,I grok
-    class E,J output
