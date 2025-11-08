@@ -11,6 +11,7 @@ import {
   ChevronUp as ChevronUpIcon,
   Database,
   Sparkles,
+  Docker,
 } from "lucide-react";
 import axios from "axios";
 
@@ -49,6 +50,7 @@ const ChatUI = () => {
     { name: "GitHub", url: "https://github.com/ri123-ya", icon: Github },
     { name: "LeetCode", url: "https://leetcode.com/u/ri_123/", icon: Code },
     { name: "Portfolio", url: "https://yourportfolio.com", icon: Briefcase },
+    { name: "Docker Hub", url: "https://yourportfolio.com", icon: Docker },
   ];
 
   useEffect(() => {
@@ -90,7 +92,7 @@ const ChatUI = () => {
     setCurrentStep(" Classifying your question...");
     let stepInterval = null;
     try {
-      const response = await axios.post("https://my-bot-backend-ap1x.onrender.com/api/chat", {
+      const response = await axios.post("https://my-bot-backend-zlft.onrender.com/api/chat", {
         message: currentMsg,
         threadId: threadId,
       });
