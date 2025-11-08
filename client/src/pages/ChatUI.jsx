@@ -49,8 +49,16 @@ const ChatUI = () => {
     },
     { name: "GitHub", url: "https://github.com/ri123-ya", icon: Github },
     { name: "LeetCode", url: "https://leetcode.com/u/ri_123", icon: Code },
-    { name: "Portfolio", url: "https://riya-rastogi.netlify.app", icon: Briefcase },
-    { name: "Docker Hub", url: "https://hub.docker.com/repositories/riya02rastogi", icon: Container },
+    {
+      name: "Portfolio",
+      url: "https://riya-rastogi.netlify.app",
+      icon: Briefcase,
+    },
+    {
+      name: "Docker Hub",
+      url: "https://hub.docker.com/repositories/riya02rastogi",
+      icon: Container,
+    },
   ];
 
   useEffect(() => {
@@ -95,9 +103,7 @@ const ChatUI = () => {
       const response = await axios.post("https://my-bot-backend-6e84.onrender.com/api/chat", {
         message: currentMsg,
         threadId: threadId,
-      },
-      { timeout: 90000 }//for mobile network delays
-    );
+      });
 
       const route = response.data.routeDecision;
       if (route === "RAG_QUERY") {
