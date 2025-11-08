@@ -82,35 +82,23 @@ User asks: "What projects?"
 
 ```mermaid
 flowchart TD
-    %% === Input ===
     A[User Message + threadId] --> B[Backend: /api/chat]
-
-    %% === Cache Check ===
     B --> C{node-cache<br/>Hit for threadId?}
     C -- Yes --> D[Return cached response]
     D --> Z[Stream to Frontend]
-
-    %% === Router Service (Gemini) ===
     C -- No --> E[routerService.js<br/>(Google Gemini)]
     E --> F{Is it a RAG query?}
-
-    %% === Direct Path ===
     F -- No --> G[Direct → Grok LLM]
     G --> H[Generate response]
     H --> I[Store in node-cache<br/>(key: threadId)]
-
-    %% === RAG Path ===
     F -- Yes --> J[Gemini → Vector Embedding]
     J --> K[Qdrant Similarity Search]
     K --> L[Retrieve Top-K Resume Chunks]
     L --> M[Prompt = User Query + Chunks]
     M --> N[Grok LLM → Final Answer]
     N --> I
-
-    %% === Output ===
     I --> Z
 
-    %% === Styling ===
     classDef input fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px;
     classDef cache fill:#fef3c7,stroke:#f59e0b,stroke-width:2px;
     classDef router fill:#f0fdf4,stroke:#22c55e,stroke-width:2px;
