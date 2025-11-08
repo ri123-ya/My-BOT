@@ -44,12 +44,12 @@ const ChatUI = () => {
   const socialLinks = [
     {
       name: "LinkedIn",
-      url: "www.linkedin.com/in/riya-rastogi-260180204",
+      url: "https://www.linkedin.com/in/riya-rastogi-260180204",
       icon: Linkedin,
     },
     { name: "GitHub", url: "https://github.com/ri123-ya", icon: Github },
-    { name: "LeetCode", url: "https://leetcode.com/u/ri_123/", icon: Code },
-    { name: "Portfolio", url: "https://yourportfolio.com", icon: Briefcase },
+    { name: "LeetCode", url: "https://leetcode.com/u/ri_123", icon: Code },
+    { name: "Portfolio", url: "https://riya-rastogi.netlify.app", icon: Briefcase },
     { name: "Docker Hub", url: "https://hub.docker.com/repositories/riya02rastogi", icon: Container },
   ];
 
@@ -92,7 +92,7 @@ const ChatUI = () => {
     setCurrentStep(" Classifying your question...");
     let stepInterval = null;
     try {
-      const response = await axios.post("http://localhost:3000/api/chat", {
+      const response = await axios.post("https://my-bot-backend-6e84.onrender.com/api/chat", {
         message: currentMsg,
         threadId: threadId,
       });
