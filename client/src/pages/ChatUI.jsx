@@ -95,7 +95,9 @@ const ChatUI = () => {
       const response = await axios.post("https://my-bot-backend-6e84.onrender.com/api/chat", {
         message: currentMsg,
         threadId: threadId,
-      });
+      },
+      { timeout: 90000 }//for mobile network delays
+    );
 
       const route = response.data.routeDecision;
       if (route === "RAG_QUERY") {
