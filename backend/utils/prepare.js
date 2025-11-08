@@ -10,12 +10,10 @@ const filePath = "./data/Resume.pdf";
 
 export async function indexTheDocument(filePath) {
   //Load the Pdf
-  console.log("🔄 Loading PDF...");
   const loader = new PDFLoader(filePath, { splitPages: false });
   const doc = await loader.load();
-  console.log("✅ PDF loaded");
 
-  console.log("Document Loaded: ", doc[0].pageContent);
+  // console.log("Document Loaded: ", doc[0].pageContent);
 
   //Chunking
   const textsplitters = new RecursiveCharacterTextSplitter({
@@ -24,20 +22,20 @@ export async function indexTheDocument(filePath) {
     separators: ["\n\n", "\n", " ", ""]
   });
   const chunks = await textsplitters.splitDocuments(doc);
-  console.log("Chunks : ", chunks);
+  // console.log("Chunks : ", chunks);
 
   
-  console.log("🔄 Chunking document...");
-  console.log(`✅ Created ${chunks.length} chunks`);
+  // console.log("Chunking document...");
+  // console.log(`Created ${chunks.length} chunks`);
 
   // Make Embeddings
-  console.log("🔄 Initializing embedding model...");
+  // console.log("Initializing embedding model...");
   const embeddingModel = new GoogleGenerativeAIEmbeddings({
     modelName: "text-embedding-004",
   });
 
   //Store in Vector DB
-  console.log("🔄 Creating embeddings and storing in Qdrant...");
+  // console.log("Creating embeddings and storing in Qdrant...");
   const vectorStore = await QdrantVectorStore.fromDocuments(
     chunks,
     embeddingModel,
@@ -47,8 +45,7 @@ export async function indexTheDocument(filePath) {
       collectionName: "My-Bot",
     }
   );
-  console.log("✅ All vectors stored in Qdrant successfully!");
-  console.log(`📊 Collection: "My-Bot" contains ${chunks.length} vectors`);
+  // console.log(`Collection: "My-Bot" contains ${chunks.length} vectors`);
 
   return vectorStore;
 }

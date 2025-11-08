@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 
-// ✅ Use environment variable instead of hardcoding
+// Use environment variable instead of hardcoding
 const apiKey = process.env.GOOGLE_API_KEY;
 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
@@ -35,7 +35,7 @@ Respond with ONLY one of these two keywords, nothing else.`;
  * @returns {Promise<string>} 'RAG_QUERY' or 'DIRECT_LLM'
  */
 export async function classifyQuery(query) {
-  // ✅ Validate API key
+  // Validate API key
   if (!apiKey) {
     console.error("GOOGLE_API_KEY not found in environment variables");
     return "RAG_QUERY"; // Safe fallback
