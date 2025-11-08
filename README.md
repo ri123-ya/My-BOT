@@ -82,6 +82,7 @@ User asks: "What projects?"
 ### RAG Flo### RAG Flow (Simplified & Accurate)
 
 ### RAG Flow (Clean & Simple)
+### RAG Flow
 
 ```mermaid
 flowchart TD
@@ -94,6 +95,6 @@ flowchart TD
 
     C -- RAG --> F["Gemini\nVector Embedding"]
     F --> G["Qdrant\nSimilarity Search"]
-    G --> H["Relevant Resume Chunks\n(with source metadata)"]
+    G --> H["Relevant Resume\nChunks\n(with source metadata)"]
     H --> I["Grok LLM\n(with context)"]
     I --> J["Answer + Source\n(to Frontend)"]
