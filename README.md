@@ -93,8 +93,8 @@ flowchart TD
     C -- Direct --> D["Grok LLM"]
     D --> E["Answer\n(to Frontend)"]
 
-    C -- RAG --> F["Gemini\nVector Embedding"]
-    F --> G["Qdrant\nSimilarity Search"]
-    G --> H["Relevant Resume\nChunks\n(with source metadata)"]
-    H --> I["Grok LLM\n(with context)"]
-    I --> J["Answer + Source\n(to Frontend)"]
+    C -- RAG --> F["Gemini- Vector Embedding"]
+    F --> G["Qdrant- Similarity Search"]
+    G --> H["Relevant Resume Chunks (with source metadata)"]
+    H --> I["Grok LLM (with context)"]
+    I --> J["Answer + Source (to Frontend)"]
