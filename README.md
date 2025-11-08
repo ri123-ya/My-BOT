@@ -55,9 +55,47 @@ User asks: "What projects?"
 → Updates sessionStorage
 → Fresh conversation starts
 
-
 ### *4. Page Refresh*
 
 → Loads threadId from sessionStorage
 → Loads messages from sessionStorage
 → Conversation continues! 
+
+## RAG Pipline
+
+#### Stage 1. Indexing
+- Upload the document (eg - pdf, text) 
+  `npm i @langchain/community @langchain/core pdf-parse`
+  → https://js.langchain.com/docs/integrations/document_loaders/file_loaders/pdf/
+- Chunk the document 
+   `npm i @langchain/textsplitters`
+   `import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";`
+   → https://js.langchain.com/docs/concepts/text_splitters/
+- generate vector embedding
+  `import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";`
+  → https://ai.google.dev/gemini-api/docs/embeddings
+- store the vector embedding - Vector db
+   `import { QdrantVectorStore } from "@langchain/qdrant";`
+   → https://cloud.qdrant.io/
+
+#### Stage 2. Retrival
+
+```mermaid
+flowchart TD
+    A[User types question]
+    B{Is it a RAG query?}
+    C[Gemini Embedding]
+    D[Qdrant Similarity Search]
+    E[Relevant Resume Chunks]
+    F[Prompt + Context → Grok]
+    G[Direct → Grok]
+    H[Answer to UI]
+
+    A --> B
+    B -- Yes --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> H
+    B -- No --> G
+    G --> H
