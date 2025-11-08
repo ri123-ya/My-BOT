@@ -17,4 +17,5 @@ RUN npm install --ignore-scripts
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node ./utils/prepare.js && npm start"]
+# CMD ["sh", "-c", "npm start"]
+CMD ["npm", "start"]
