@@ -1,17 +1,17 @@
 # RiyaBOT
-A full-stack RAG AI chat assistant that gives ans according to my resume.
+**A full-stack RAG AI chat assistant** that answers **only from my resume** (`Resume.pdf`).  
 
 ## Features
 
-- **Resume-Based Answers** – Uploaded mine `Resume.pdf`, ask  anything from resume.  
+- **Resume-Based Answers** – Upload `Resume.pdf`, ask anything from it  
 - **RAG Pipeline** – LangChain + Qdrant for semantic retrieval  
-- **Dual LLMs** – Switch between **Grok** (xAI) and **Google Gemini**
-    -  Grok SDK for final LLM response
-    -  Google Gemini for vector embedding and Deciding whether the user Query is Rag Query or Direct Query.
+- **Dual LLMs**  
+  - **Grok SDK** → Final LLM response  
+  - **Google Gemini** → Vector embeddings **and** decides **RAG vs Direct** query  
 - **In-Memory Caching** – `node-cache` for faster repeated queries  
-- **Modern UI** – React + Tailwind + Vite  
+- **Modern UI** – React + Tailwind + Vite + **SessionStorage** for thread persistence  
 - **Dockerized** – Full stack with `docker-compose`
-
+  
 ## Tech Stack 
 ### Frontend
 - React
