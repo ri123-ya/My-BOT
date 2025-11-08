@@ -79,38 +79,32 @@ User asks: "What projects?"
    → https://cloud.qdrant.io/
 
 #### Stage 2. Retrival
-### RAG Flow (Backend Logic)
+### RAG Flo### RAG Flow (Simplified & Accurate)
 
 ```mermaid
 flowchart TD
-    A["User Message + threadId"] --> B["Backend: /api/chat"]
-    B --> C{"node-cache\nHit for threadId?"}
-    C -- Yes --> D["Return cached response"]
-    D --> Z["Stream to Frontend"]
-    C -- No --> E["routerService.js\n(Google Gemini)"]
-    E --> F{"Is it a RAG query?"}
-    F -- No --> G["Direct to Grok LLM"]
-    G --> H["Generate response"]
-    H --> I["Store in node-cache\n(key: threadId)"]
-    F -- Yes --> J["Gemini to Vector Embedding"]
-    J --> K["Qdrant Similarity Search"]
-    K --> L["Retrieve Top-K Resume Chunks"]
-    L --> M["Prompt = Query + Chunks"]
-    M --> N["Grok LLM to Final Answer"]
-    N --> I
-    I --> Z
+    A["User Query"] --> B["Gemini\n(RAG vs Direct Decision)"]
+    
+    B --> C{"RAG or Direct?"}
+    
+    C -- Direct --> D["Grok LLM"]
+    D --> E["Answer\n(to Frontend)"]
+    
+    C -- RAG --> F["Gemini\nVector Embedding"]
+    F --> G["Qdrant\nSimilarity Search"]
+    G --> H["Relevant Resume Chunks\n(with source metadata)"]
+    H --> I["Grok LLM\n(with context)"]
+    I --> J["Answer + Source\n(to Frontend)"]
 
     %% Styling
-    classDef input fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
-    classDef cache fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
-    classDef router fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
-    classDef rag fill:#f0f0ff,stroke:#6366f1,stroke-width:2px
-    classDef llm fill:#faf5ff,stroke:#a855f7,stroke-width:2px
-    classDef output fill:#ecfdf5,stroke:#16a34a,stroke-width:2px
+    classDef user fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    classDef gemini fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    classDef qdrant fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    classDef grok fill:#f3e8ff,stroke:#a855f7,stroke-width:2px
+    classDef output fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
 
-    class A input
-    class C cache
-    class E router
-    class J,K,L rag
-    class G,N llm
-    class Z output
+    class A user
+    class B,F gemini
+    class G qdrant
+    class D,I grok
+    class E,J output
