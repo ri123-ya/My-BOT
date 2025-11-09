@@ -129,17 +129,16 @@ const ChatUI = () => {
     let stepInterval = null;
 
     try {
-      const response = await axios.post("https://my-bot-backend-sc44.onrender.com/api/chat", {
-        message: messageText,
-        threadId,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+      // 1. CLASSIFY – super fast
+      const classifyRes = await axios.post(
+        "https://my-bot-backend-sc44.onrender.com/api/classify",
+        { message: messageText, threadId },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-      const route = response.data.routeDecision;
+      const route = classifyRes.data.route;
 
+      // 2. START YOUR ANIMATION STYLE
       if (route === "RAG_QUERY") {
         const steps = [
           "Searching for similar documents......",
@@ -156,7 +155,7 @@ const ChatUI = () => {
           }
         }, 1000);
 
-        // Wait for animation
+        // Optional: wait a bit for animation to feel smooth
         await new Promise((resolve) => setTimeout(resolve, 3000));
         if (stepInterval) clearInterval(stepInterval);
       } else {
@@ -164,13 +163,22 @@ const ChatUI = () => {
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
+      // 3. GET FINAL ANSWER (pass route)
+      const answerRes = await axios.post(
+        "https://my-bot-backend-sc44.onrender.com/api/chat",
+        { message: messageText, threadId, route },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const data = answerRes.data;
+
       const botMessage = {
         id: `bot-${Date.now()}-${Math.random()}`,
         sender: "bot",
-        text: response.data.answer,
-        sources: response.data.sources || [],
-        usedRetrieval: response.data.usedRetrieval,
-        routeDecision: response.data.routeDecision,
+        text: data.answer,
+        sources: data.sources || [],
+        usedRetrieval: data.usedRetrieval,
+        routeDecision: data.routeDecision,
       };
 
       setMessages((prev) => [...prev, botMessage]);
@@ -190,7 +198,6 @@ const ChatUI = () => {
       setCurrentStep("");
     }
   };
-
   const handleNewChat = () => {
     const newThreadId = `thread-${Date.now()}-${Math.random()
       .toString(36)
