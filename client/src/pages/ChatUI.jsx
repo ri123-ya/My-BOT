@@ -63,7 +63,7 @@ const ChatUI = () => {
     },
     {
       name: "Docker Hub",
-      url: "https://hub.docker.com/repositories/riya02rastogi",
+      url: "https://hub.docker.com/u/riya02rastogi",
       icon: Container,
     },
   ];
@@ -218,6 +218,18 @@ const ChatUI = () => {
     }
   };
 
+  const formatLinks = (text) => {
+    if (!text) return "";
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(
+      urlRegex,
+      (url) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:underline">${url}</a>`
+    );
+  };
+
+
+
   return (
     <div className="bg-neutral-900 text-white min-h-screen overflow-x-hidden">
       {/* Header with RiyaBot and Social Links */}
@@ -335,7 +347,14 @@ const ChatUI = () => {
                     </div>
                     <div className="max-w-[70%]">
                       {/* Main answer */}
-                      <div className="text-gray-100">{message.text}</div>
+                      {/* <div className="text-gray-100">{message.text}</div> */}
+                      <div
+                        className="text-gray-100 leading-relaxed"
+                        dangerouslySetInnerHTML={{
+                          __html: formatLinks(message.text),
+                        }}
+                      />
+
                     </div>
                   </div>
 
