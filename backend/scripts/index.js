@@ -2,7 +2,7 @@ import { indexTheDocument } from "../utils/prepare.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const filePath = "./data/Resume.pdf";
+const filePath = "./data/Riya_Resume.pdf";
 
 console.log("Starting indexing...");
 
