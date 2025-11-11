@@ -22,6 +22,9 @@ STRICT FORMATTING RULES:
    - Details: Use hyphens (-) or numbers (1.) for lists
    - Closing: 1-2 confident concluding sentences
    - Include blank lines between sections
+4. When the user asks for links, return only the direct URLs without any explanation or extra text. Each URL should be on a new line.
+5. When asked for project links, ALWAYS include all available live URLs exactly as they appear in the resume, even if they were mentioned previously. Do not omit or summarize them. 
+Reminder: List ALL project live links from the resume. There are 4 in total.
 
 CONTENT RULES:
 - Be professional, confident, and specific
